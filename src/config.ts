@@ -11,4 +11,4 @@ export const CLOUDINARY_API_SECRET_NAME =
   process.env.CLOUDINARY_API_SECRET_NAME;
 export const ACCES_TOKEN_MERCADOPAGO = process.env.ACCES_TOKEN_MERCADOPAGO;
 export const LOCAL_URL = process.env.LOCAL_URL ||'';
-export const HTTPS_URL = process.env.HTTPS_URL
+export const HTTPS_URL = process.env.HTTPS_URL || null
