@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import mercadopago from "mercadopago";
 import createMpPreference from "../helpers/mercadopago.js";
 import OrderModel from "../models/order";
-import { FRONTEND_CLIENT_URL } from "../config";
+import { FRONTEND_CLIENT_URL } from "../config.js";
 import PaymentModel from "../models/payments";
 export const createOrder = async (req: Request, res: Response) => {
   try {

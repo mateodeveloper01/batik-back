@@ -1,6 +1,6 @@
 import mercadopago from "mercadopago";
-import { LOCAL_URL, HTTPS_URL, FRONTEND_CLIENT_URL } from "./../config.ts";
-import OrderModel from "../models/order.ts";
+import { LOCAL_URL, HTTPS_URL, FRONTEND_CLIENT_URL } from "../config";
+import OrderModel from "../models/order";
 const createMpPreference = async ({ billing, products, shipping, user }) => {
   const payer = {
     name: billing.name || shipping.name,
