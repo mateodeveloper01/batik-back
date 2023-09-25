@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET_KEY } from "../config";
 
 export const login = async (req: Request, res: Response) => {
+  // console.log(req.body);
   try {
     const user = await UserModel.findOne(req.body);
     if (!user) {
@@ -15,8 +15,9 @@ export const login = async (req: Request, res: Response) => {
       sub: user._id,
       username: user.username,
       email: user.email,
+      admin: user.admin,
     };
-    const token = jwt.sign(tokenPayload, JWT_SECRET_KEY as string);
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET_KEY as string);
 
     res.cookie("jwt", token, {
       //...... 1s    1m   1h   1d   6 meses
@@ -29,7 +30,6 @@ export const login = async (req: Request, res: Response) => {
     res.status(200).json({
       message: "Usuario logeado",
       data: tokenPayload,
-      user: req.body,
     });
   } catch (error) {
     res.status(404).json({ message: "Error al logear usuario", error });
@@ -37,6 +37,7 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
+  console.log(req.body);
   try {
     await new UserModel(req.body).save();
     res.json({ message: "Usuario registrado", user: req.body }).status(200);
