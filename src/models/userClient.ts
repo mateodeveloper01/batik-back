@@ -1,11 +1,12 @@
 import { Schema, model } from "mongoose";
 
-const userLocalSchema = new Schema({
+const userSchema = new Schema({
   username: { type: String, unique: true },
   email: { type: String, unique: true },
   password: { type: String },
+  admin: { type: Boolean, default: false },
 });
 
-const userLocalModel = model("UserLocal", userLocalSchema);
+const userModel = model("User", userSchema);
 
-export default userLocalModel;
+export default userModel;
