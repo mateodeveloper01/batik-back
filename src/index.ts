@@ -29,7 +29,6 @@ mercadopago.configure({
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
-console.log([FRONTEND_ADMIN_URL as string, FRONTEND_CLIENT_URL as string]);
 app.use(
   cors({
     origin: [FRONTEND_ADMIN_URL as string, FRONTEND_CLIENT_URL as string], // Obligatorio que no sea "*" cuando usamos "credentials: true"

@@ -3,63 +3,27 @@ import ProductModel from "../models/products";
 import CategoryModel from "../models/category";
 
 interface Props {
-  categories: {
-    title: string;
-  };
-  sub_categories: {
-    id:string
-  };
+  category: string;
 }
 
 export const all = async (req: Request, res: Response) => {
-  // console.log(req.query?.filter);
   const filter = req.query.filter as unknown;
-
   try {
     if (typeof filter === "object" && filter !== null) {
       const filterProps = filter as Props;
-      if (filterProps.categories) {
-        // console.log(filterProps);
-
-        if (filterProps.sub_categories) {
-          console.log(filterProps.sub_categories.id);
-          const category = await CategoryModel.find({
-            title: filterProps?.categories.title,
-          });
-
-          const data = await ProductModel.find({
-            categories: category[0].id,
-            sub_categories:filterProps.sub_categories.id
-          })
-            .populate("categories")
-            .populate("sub_categories")
-            .populate("img2")
-            .populate("img");
-
-          res.status(200).json({ data });
-        } else {
-          const category = await CategoryModel.find({
-            title: filterProps?.categories.title,
-          });
-
-          const data = await ProductModel.find({
-            categories: category[0].id,
-          })
-            .populate("categories")
-            .populate("sub_categories")
-            .populate("img2")
-            .populate("img");
-
-          res.status(200).json({ data });
-        }
-      }
+      const category = await CategoryModel.find({
+        title: filterProps.category,
+      });
+      const data = await ProductModel.find({
+        categories: category[0].id,
+      })
+        .populate("img")
+        .populate("categories");
+      res.status(200).json({ data });
     } else {
       const data = await ProductModel.find({})
         .populate("categories")
-        .populate("sub_categories")
-        .populate("img2")
         .populate("img");
-
       res.status(200).json({ data });
     }
   } catch (error) {
@@ -84,7 +48,6 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 export const edit = async (req: Request, res: Response) => {
-  // const { _id,title,description,price,new,img,img2,type,categories,sub }= req.body
   try {
     let product = await ProductModel.findByIdAndUpdate(req.body._id, req.body);
 
@@ -100,8 +63,6 @@ export const filterType = async (req: Request, res: Response) => {
   try {
     const data = await ProductModel.find({ type: req.params.type })
       .populate("categories")
-      .populate("sub_categories")
-      .populate("img2")
       .populate("img");
     res.json({ data }).status(200);
   } catch (error) {
@@ -113,8 +74,6 @@ export const getById = async (req: Request, res: Response) => {
   try {
     const data = await ProductModel.find({ _id: req.params.id })
       .populate("categories")
-      .populate("sub_categories")
-      .populate("img2")
       .populate("img");
     // console.log({ data });
     res.json({ data: data[0] }).status(200);
@@ -122,3 +81,75 @@ export const getById = async (req: Request, res: Response) => {
     res.status(404).json({ message: "Error al registrar usuario", error });
   }
 };
+
+// if (typeof filter === "object" && filter !== null) {
+//   const filterProps = filter as Props;
+//   if (filterProps.categories) {
+//     // console.log(filterProps);
+
+//     // if (filterProps.sub_categories) {
+//     //   // console.log(filterProps.sub_categories.id);
+//     //   const category = await CategoryModel.find({
+//     //     title: filterProps?.categories.title,
+//     //   });
+
+//       const data = await ProductModel.find({
+//         categories: category[0].id,
+//         // sub_categories: filterProps.sub_categories.id,
+//       })
+//         .populate("categories")
+//         .populate("img2")
+//         .populate("img");
+
+//       res.status(200).json({ data });
+//     } else {
+//       const category = await CategoryModel.find({
+//         title: filterProps?.categories.title,
+//       });
+
+//       const data = await ProductModel.find({
+//         categories: category[0].id,
+//       })
+//         .populate("categories")
+//         .populate("img2")
+//         .populate("img");
+
+//       res.status(200).json({ data });
+//     }
+//   }
+// try {
+//   if (typeof filter === "object" && filter !== null) {
+//     const filterProps = filter as Props;
+// if (filterProps.categories) {
+// console.log(filterProps);
+
+// if (filterProps.sub_categories) {
+//   // console.log(filterProps.sub_categories.id);
+//   const category = await CategoryModel.find({
+//     title: filterProps?.categories.title,
+//   });
+
+//     const data = await ProductModel.find({
+//       categories: category[0].id,
+//       // sub_categories: filterProps.sub_categories.id,
+//     })
+//       .populate("categories")
+//       .populate("img2")
+//       .populate("img");
+
+//     res.status(200).json({ data });
+//   } else {
+//     const category = await CategoryModel.find({
+//       title: filterProps?.categories.title,
+//     });
+
+//     const data = await ProductModel.find({
+//       categories: category[0].id,
+//     })
+//       .populate("categories")
+//       .populate("img2")
+//       .populate("img");
+
+//     res.status(200).json({ data });
+//   }
+// }
