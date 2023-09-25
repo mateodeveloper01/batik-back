@@ -1,27 +1,21 @@
 import { Request, Response } from "express";
 import mercadopago from "mercadopago";
-import "dotenv/config";
-import { orderProp } from "../types/types";
-import {
-  PreferenceItem,
-  PreferencePayer,
-  PreferenceShipment,
-} from "mercadopago/models/preferences/create-payload.model";
-import createMpPreference from '../helpers/mercadopago.js';
+import createMpPreference from "../helpers/mercadopago.js";
 import OrderModel from "../models/order";
+import { FRONTEND_CLIENT_URL } from "../config";
+import PaymentModel from "../models/payments";
 export const createOrder = async (req: Request, res: Response) => {
-  // const { billing, products, shipping, user }: orderProp = req.body;
-
   try {
-   const result = await createMpPreference(req.body)
+    const result = await createMpPreference(req.body);
     res.send({ url: result.body.init_point }).status(200);
   } catch (error) {
-    res.status(404).json({ message: "Error al logear usuario", error });
+    res.status(404).json({ message: "Error al crear referencia", error });
   }
 };
+
 export const success = async (req: Request, res: Response) => {
   try {
-    res.redirect("http://localhost:3000/acount");
+    res.redirect(`${FRONTEND_CLIENT_URL}/acount`);
   } catch (error) {
     res.status(404).json({ message: "Error al logear usuario", error });
   }
@@ -29,6 +23,7 @@ export const success = async (req: Request, res: Response) => {
 export const failure = async (req: Request, res: Response) => {
   try {
     console.log(req.params.preferences_id);
+    res.redirect(`${FRONTEND_CLIENT_URL}/acount`);
 
     res.send("failure");
   } catch (error) {
@@ -38,6 +33,7 @@ export const failure = async (req: Request, res: Response) => {
 export const pending = async (req: Request, res: Response) => {
   try {
     console.log(req.params.preferences_id);
+    res.redirect(`${FRONTEND_CLIENT_URL}/acount`);
 
     res.send("pending");
   } catch (error) {
@@ -51,7 +47,11 @@ export const webhook = async (req: Request, res: Response) => {
       const data = await mercadopago.payment.findById(
         Number(payment["data.id"])
       );
-      await OrderModel.create({ data });
+      await PaymentModel.create({ data });
+      await OrderModel.findByIdAndUpdate(
+        { _id: data.response.metadata.order_id },
+        { paymentStatus: "success" }
+      );
     }
     res.sendStatus(204);
   } catch (error) {
