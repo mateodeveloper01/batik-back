@@ -1,15 +1,31 @@
 import { Request, Response } from "express";
 import mercadopago from "mercadopago";
 import createMpPreference from "../helpers/mercadopago.js";
+import createOrderHelper from "../helpers/createOrder.js";
+
 import OrderModel from "../models/order";
 import { FRONTEND_CLIENT_URL } from "../config.js";
 import PaymentModel from "../models/payments";
+import sendEmail from "../helpers/mailer";
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    const result = await createMpPreference(req.body);
-    res.send({ url: result.body.init_point }).status(200);
+    if (req.body.paymentMethod === "transfer") {
+      await createOrderHelper(req.body);
+      sendEmail({
+        to: req.body.user.email,
+        subject: "Tienda batik ",
+        html: "datos de transferencia ",
+      });
+      res.json({ message: "Orden creada" }).status(200);
+    } else if (req.body.paymentMethod === "mp") {
+      const result = await createMpPreference(req.body);
+      res.send({ url: result.body.init_point }).status(200);
+    } else if (req.body.paymentMethod === "paymentStore") {
+      await createOrderHelper(req.body);
+      res.json({ message: "Orden creada" }).status(200);
+    }
   } catch (error) {
-    res.status(404).json({ message: "Error al crear referencia", error });
+    res.status(404).json({ message: "Error al crear orden", error });
   }
 };
 
@@ -50,7 +66,7 @@ export const webhook = async (req: Request, res: Response) => {
       await PaymentModel.create({ data });
       await OrderModel.findByIdAndUpdate(
         { _id: data.response.metadata.order_id },
-        { paymentStatus: "success" }
+        { payment: { paymentStatus: "success" } }
       );
     }
     res.sendStatus(204);
