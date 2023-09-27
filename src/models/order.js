@@ -18,13 +18,26 @@ const orderSchema = new Schema({
     street_name: String,
     street_number: String,
     zip_code: String,
+    shippingMethod: String,
+    status: {
+      type: String,
+      enum: ["pending", "success"],
+      default: "pending",
+    },
   },
   payer: {
     first_name: String,
     last_name: String,
-    email:String
+    email: String,
   },
-  paymentStatus: { type: String, enum: ["success", "pending", "cancel"] },
+  payment: {
+    paymentStatus: { type: String, enum: ["success", "pending", "cancel"] },
+    paymentMethod: String,
+  },
+  date: {
+    type: Date,
+    default: new Date(Date.now() - 3 * 60 * 60 * 1000),
+  },
 });
 
 const OrderModel = model("Order", orderSchema);
