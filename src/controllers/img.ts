@@ -12,28 +12,28 @@ export const all = async (req: Request, res: Response) => {
   }
 };
 
-export const upload = (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No se encontró ningún archivo" });
+export const upload = async (req: Request, res: Response) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "No se encontraron archivos" });
   }
+  const files = req.files as Express.Multer.File[];
 
-  cloudinary.uploader.upload(req.file.path, async (err: any, result: any) => {
-    if (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ message: "Error al subir la imagen a Cloudinary" });
-    }
+  const promises = files.map(async (file) => {
     try {
+      const result = await cloudinary.uploader.upload(file.path);
       await new ImgModel({
         url: result.secure_url,
-        title: req.body.name,
+        title: result.original_filename,
         cloudinaryId: result.public_id,
       }).save();
-      res.json({ imageUrl: result.secure_url });
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   });
+
+  await Promise.all(promises);
 };
+
 export const remove = async (req: Request, res: Response) => {
   const public_id = req.params.id;
 
