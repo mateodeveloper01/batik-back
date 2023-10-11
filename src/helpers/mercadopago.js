@@ -15,9 +15,11 @@ const createMpPreference = async (body) => {
       unit_price: Number(price),
     };
   });
+  console.log(body.shipping.shippingPrice);
   const result = await mercadopago.preferences.create({
     items,
     metadata: { email: body.user.email, order_id: data._id },
+    shipments: {cost:body.shipping.shippingPrice},
     back_urls: {
       success: `${LOCAL_URL}/api/mp/success`,
       failure: `${LOCAL_URL}/api/mp/failure`,

@@ -11,6 +11,7 @@ import {
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
   CLOUDINARY_API_SECRET_NAME,
+  FRONTEND_ADMIN_DEV_URL,
   FRONTEND_ADMIN_URL,
   FRONTEND_CLIENT_URL,
   PORT,
@@ -31,8 +32,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: [FRONTEND_ADMIN_URL as string, FRONTEND_CLIENT_URL as string], // Obligatorio que no sea "*" cuando usamos "credentials: true"
-    // origin:[env.process.],
+    origin: [
+      FRONTEND_ADMIN_URL as string,
+      FRONTEND_CLIENT_URL as string,
+      FRONTEND_ADMIN_DEV_URL as string,
+    ],
     methods: ["POST", "PUT", "DELETE", "GET", "OPTIONS"],
     credentials: true,
   })
