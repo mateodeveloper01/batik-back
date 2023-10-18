@@ -1,4 +1,5 @@
 import express from "express";
+import os from "os";
 import routes from "./routes";
 import connectDB from "./db/connect";
 import cors from "cors";
@@ -18,6 +19,10 @@ import {
 } from "./config";
 const app = express();
 connectDB();
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 cloudinary.config({
   cloud_name: CLOUDINARY_API_SECRET_NAME,
@@ -27,9 +32,7 @@ cloudinary.config({
 mercadopago.configure({
   access_token: ACCES_TOKEN_MERCADOPAGO as string,
 });
-app.use(morgan("dev"));
-app.use(cookieParser());
-app.use(express.json());
+
 console.log([
   FRONTEND_ADMIN_URL as string,
   FRONTEND_CLIENT_URL as string,
@@ -46,6 +49,9 @@ app.use(
     credentials: true,
   })
 );
+app.use("/health-check", (_, res) => {
+  res.status(200).send(os.hostname());
+});
 app.use("/api", routes);
 
 app.listen(PORT, () => {
