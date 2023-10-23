@@ -17,6 +17,7 @@ import {
   FRONTEND_CLIENT_URL,
   PORT,
 } from "./config";
+import ProductModel from "./models/products";
 const app = express();
 connectDB();
 app.use(cookieParser());
@@ -49,6 +50,16 @@ app.use(
     credentials: true,
   })
 );
+// app.use("/update", async (_, res) => {
+//   try {
+//     await ProductModel.updateMany({}, { $set: { isStock: true } });
+//     res.status(200).send("");
+//   } catch (error) {
+//     console.log(error);
+
+//     res.status(404).send({ error });
+//   }
+// });
 app.use("/health-check", (_, res) => {
   res.status(200).send(os.hostname());
 });
