@@ -5,6 +5,7 @@ const productSchema = new Schema({
   description: { type: String },
   price: { type: Number },
   new: { type: Boolean },
+  isStock: { type: Boolean },
   img: [{ type: mongoose.Schema.Types.ObjectId, ref: "Img" }],
   type: {
     type: String,
